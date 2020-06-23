@@ -63,7 +63,7 @@ def getColor(r, accelerator, dep):
 
 def main():
   rnd = []
-  for i in range(8):
+  for i in range(1):
     rnd.append(random.uniform(0, 1))
   rnd[0] = 0.5
   [vertices, face] = ply.parse_PLY()

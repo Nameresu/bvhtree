@@ -49,7 +49,7 @@ class BVHTree:
   def __init__(self, primList):
     self.buckets = [Buckets() for i in range(12)]
     self.bvhCost = [.0 for i in range(len(self.buckets))]
-    self.maxPrimsInNode = 8
+    self.maxPrimsInNode = 4
     self.totalNode = 0
     self.primList = primList
     self.primitiveInfo = []
@@ -96,8 +96,8 @@ class BVHTree:
         if (n <= 4):
           [isLeaf, num1, num2] = self.SplitByCount(centroidBounds, st, n, dim)
         else:
-          [isLeaf, num1, num2] = self.SplitByBVH(centroidBounds, st, n, dim)
-          #[isLeaf, num1, num2] = self.SplitByMiddle(centroidBounds, st, n, dim)
+          #[isLeaf, num1, num2] = self.SplitByBVH(centroidBounds, st, n, dim, bounds)
+          [isLeaf, num1, num2] = self.SplitByMiddle(centroidBounds, st, n, dim)
           #[isLeaf, num1, num2] = self.SplitByCount(centroidBounds, st, n, dim)
         if (not isLeaf):
           cur.InitInterior(dim, self.RecursiveBuild(st, num1),
@@ -137,7 +137,7 @@ class BVHTree:
     #print(st, n, num1, num2)
     return [False, num1, num2]
 
-  def SplitByBVH(self, centroidBounds, st, n, dim):
+  def SplitByBVH(self, centroidBounds, st, n, dim, nodeBounds):
     for i in range(len(self.buckets)):
       self.buckets[i].bounds.init()
       self.bvhCost[i] = float("inf")
@@ -165,7 +165,7 @@ class BVHTree:
       rightArea = rightBounds.SurfaceArea()
       self.bvhCost[i] = .125 + (
           (leftCount * leftArea + rightCount * rightArea) /
-          (leftArea + rightArea))
+          nodeBounds.SurfaceArea())
     minCost = float("inf")
     splitIndex = -1  #first Unpredicate block
     for i in range(len(self.bvhCost)):
